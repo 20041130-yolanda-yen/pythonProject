@@ -1,12 +1,14 @@
 import requests
 from bs4 import BeautifulSoup
 import time
+import pandas as pd
+import openpyxl
 # ---------------------------------
 
 #Can edit base on user input but for now using fixed url
 baseURL = "https://www.jobstreet.com.sg"
 jobName = "/software-developer-jobs"
-location = "/in-Singapore"
+location = "/in-Singapore?pg=3"
 
 jobTitles = []
 jobPTimes = []
@@ -61,13 +63,15 @@ for link in job_links:
         except:
             print("")
 
-#Total should be 30 jobs (1 page) but some how job location keeps coming back 29 (its ignoring 1)
-#Can use range to 30 to loop through and add each into excel
-print(len(jobTitles))
-print(len(jobPTimes))
-print(len(jobLevel))
-print(len(jobURLList))
-print(len(jobCompany))
-print(len(jobQuali))
-print(len(jobLocation))
+def excelConveter(jobTitles, jobPTimes, jobLevel, jobURLList, jobCompany, jobQuali, jobLocation,fileName):
+    # creating excel headers
+    columns = ['Job Title', 'jobPTimes', 'job Level', 'jobURLList', 'jobCompany', 'jobQuali', 'jobLocation']
+    # Creating dataframe for pandas to convert into excel
+    df = pd.DataFrame(list(zip(jobTitles, jobPTimes, jobLevel, jobURLList, jobCompany, jobQuali, jobLocation)), columns=columns)
+    # Convert dataframe into excel
+    newfileName = fileName + ".xlsx"
+    df.to_excel(newfileName)
+
+#calling functions to convert data into dataframe then excel
+excelConveter(jobTitles, jobPTimes, jobLevel, jobURLList, jobCompany, jobQuali, jobLocation, "Jobs")
 

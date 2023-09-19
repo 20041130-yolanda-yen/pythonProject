@@ -65,9 +65,9 @@ for link in job_links:
 
 def excelConveter(jobTitles, jobPTimes, jobLevel, jobURLList, jobCompany, jobQuali, jobLocation,fileName):
     # creating excel headers
-    columns = ['Job Title', 'jobPTimes', 'job Level', 'jobURLList', 'jobCompany', 'jobQuali', 'jobLocation']
+    columns = ['Job Title', 'Post Time', 'Job Level', 'Company Name', 'Qualifications', 'Location', 'Job URL']
     # Creating dataframe for pandas to convert into excel
-    df = pd.DataFrame(list(zip(jobTitles, jobPTimes, jobLevel, jobURLList, jobCompany, jobQuali, jobLocation)), columns=columns)
+    df = pd.DataFrame(list(zip(jobTitles, jobPTimes, jobLevel, jobCompany, jobQuali, jobLocation, jobURLList)), columns=columns)
     # Convert dataframe into excel
     newfileName = fileName + ".xlsx"
     df.to_excel(newfileName)

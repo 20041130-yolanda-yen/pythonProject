@@ -5,6 +5,7 @@ import pandas as pd
 import openpyxl
 # ---------------------------------
 
+#By Yolanda
 #Can edit base on user input but for now using fixed url
 baseURL = "https://www.jobstreet.com.sg"
 jobName = "/software-developer-jobs"
@@ -62,7 +63,9 @@ for link in job_links:
             jobQuali.append(job_Qual)
         except:
             print("")
+#--------------------------------------------------------------------------------------------------------
 
+#By Andrea:
 def excelConveter(jobTitles, jobPTimes, jobLevel, jobURLList, jobCompany, jobQuali, jobLocation,fileName):
     # creating excel headers
     columns = ['Job Title', 'Post Time', 'Job Level', 'Company Name', 'Qualifications', 'Location', 'Job URL']
@@ -74,4 +77,4 @@ def excelConveter(jobTitles, jobPTimes, jobLevel, jobURLList, jobCompany, jobQua
 
 #calling functions to convert data into dataframe then excel
 excelConveter(jobTitles, jobPTimes, jobLevel, jobURLList, jobCompany, jobQuali, jobLocation, "Jobs")
-
+#--------------------------------------------------------------------------------------------------------

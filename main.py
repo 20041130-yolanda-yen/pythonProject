@@ -82,5 +82,5 @@ def excelConveter(jobTitles, jobPTimes, jobLevel, jobURLList, jobCompany, jobQua
 
 #calling functions to convert data into dataframe then excel
 excelConveter(jobTitles, jobPTimes, jobLevel, jobURLList, jobCompany, jobQuali, jobLocation, "Jobs")
-print("Done...")
+print("Done!")
 #--------------------------------------------------------------------------------------------------------

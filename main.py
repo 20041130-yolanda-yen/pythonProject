@@ -19,50 +19,55 @@ jobCompany = []
 jobQuali = []
 jobLocation = []
 
-sURL = baseURL + jobName + location
-response = requests.get(sURL)
-soup = BeautifulSoup(response.text, "html.parser")
 
-#Get job title
-job_titles = soup.find_all("h1", class_="z1s6m00")
-for t in job_titles:
-    t = t.text.strip()
-    jobTitles.append(t)
+print("retriving data...Please hold on...")
+for i in range(3, 5, 1):
 
-#Get job post time
-job_pTimes = soup.find_all("time", class_="z1s6m00")
-for pT in job_pTimes:
-    times = str(pT["datetime"]).split("T")[0]
-    jobPTimes.append(times)
+    sURL = baseURL + jobName + ("/in-Singapore?pg=%d"%i)
+    response = requests.get(sURL)
+    soup = BeautifulSoup(response.text, "html.parser")
 
-#Get company name
-job_Comp = soup.find_all("a", class_="_6xa4xb0")
-for comps in job_Comp:
-    job_compLink = comps.get('data-automation')
-    if "jobCardCompanyLink" in job_compLink:
-        jobCompany.append(comps.text.strip())
-    elif "jobCardLocationLink" in job_compLink:
-        jobLocation.append(comps.text.strip())
+    #Get job title
+    job_titles = soup.find_all("h1", class_="z1s6m00")
+    for t in job_titles:
+        t = t.text.strip()
+        jobTitles.append(t)
 
-#For each job link, get job level and job qualification
-job_links = soup.find_all("a", class_="z1s6m00")
-for link in job_links:
-    job_link = link.get('href')
-    if "jobId" in job_link:
-        jobURL = baseURL + job_link  # job url
-        jobURLList.append(jobURL)
-        response = requests.get(jobURL)
-        soup = BeautifulSoup(response.text, "html.parser")
+    #Get job post time
+    job_pTimes = soup.find_all("time", class_="z1s6m00")
+    for pT in job_pTimes:
+        times = str(pT["datetime"]).split("T")[0]
+        jobPTimes.append(times)
 
-        time.sleep(1)
-        try:
-            job_Level = soup.find(string="Career Level").findNext('span').text.strip()
-            jobLevel.append(job_Level)
+    #Get company name
+    job_Comp = soup.find_all("a", class_="_6xa4xb0")
+    for comps in job_Comp:
+        job_compLink = comps.get('data-automation')
+        if "jobCardCompanyLink" in job_compLink:
+            jobCompany.append(comps.text.strip())
+        elif "jobCardLocationLink" in job_compLink:
+            jobLocation.append(comps.text.strip())
 
-            job_Qual = soup.find(string="Qualification").findNext('span').text.strip()
-            jobQuali.append(job_Qual)
-        except:
-            print("")
+    #For each job link, get job level and job qualification
+    job_links = soup.find_all("a", class_="z1s6m00")
+    for link in job_links:
+        job_link = link.get('href')
+        if "jobId" in job_link:
+            jobURL = baseURL + job_link  # job url
+            jobURLList.append(jobURL)
+            response = requests.get(jobURL)
+            soup = BeautifulSoup(response.text, "html.parser")
+
+            time.sleep(1)
+            try:
+                job_Level = soup.find(string="Career Level").findNext('span').text.strip()
+                jobLevel.append(job_Level)
+
+                job_Qual = soup.find(string="Qualification").findNext('span').text.strip()
+                jobQuali.append(job_Qual)
+            except:
+                print("")
+
 #--------------------------------------------------------------------------------------------------------
 
 #By Andrea:
@@ -77,4 +82,5 @@ def excelConveter(jobTitles, jobPTimes, jobLevel, jobURLList, jobCompany, jobQua
 
 #calling functions to convert data into dataframe then excel
 excelConveter(jobTitles, jobPTimes, jobLevel, jobURLList, jobCompany, jobQuali, jobLocation, "Jobs")
+print("Done...")
 #--------------------------------------------------------------------------------------------------------

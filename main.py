@@ -17,6 +17,7 @@ jobLevel = []
 jobURLList = []
 jobCompany = []
 jobQuali = []
+jobSkill = []
 jobLocation = []
 
 
@@ -58,29 +59,38 @@ for i in range(3, 5, 1):
             response = requests.get(jobURL)
             soup = BeautifulSoup(response.text, "html.parser")
 
-            time.sleep(1)
+            time.sleep(0.5)
             try:
                 job_Level = soup.find(string="Career Level").findNext('span').text.strip()
                 jobLevel.append(job_Level)
 
                 job_Qual = soup.find(string="Qualification").findNext('span').text.strip()
                 jobQuali.append(job_Qual)
+
+                # Get job title
+                job_skills = soup.find_all("li")
+                mySkills = ""
+                for s in job_skills:
+                    mySkills = mySkills + s.text.strip() + ","
+                jobSkill.append(mySkills)
+
             except:
                 print("")
 
 #--------------------------------------------------------------------------------------------------------
 
 #By Andrea:
-def excelConveter(jobTitles, jobPTimes, jobLevel, jobURLList, jobCompany, jobQuali, jobLocation,fileName):
+def excelConveter(jobTitles, jobPTimes, jobLevel, jobCompany, jobQuali, jobLocation, jobSkill,jobURLList,fileName):
     # creating excel headers
-    columns = ['Job Title', 'Post Time', 'Job Level', 'Company Name', 'Qualifications', 'Location', 'Job URL']
+    columns = ['Job Title', 'Post Time', 'Job Level', 'Company Name', 'Qualifications','Location', 'Skills','Job URL']
     # Creating dataframe for pandas to convert into excel
-    df = pd.DataFrame(list(zip(jobTitles, jobPTimes, jobLevel, jobCompany, jobQuali, jobLocation, jobURLList)), columns=columns)
+    df = pd.DataFrame(list(zip(jobTitles, jobPTimes, jobLevel, jobCompany, jobQuali,jobLocation, jobSkill, jobURLList)), columns=columns)
     # Convert dataframe into excel
     newfileName = fileName + ".xlsx"
     df.to_excel(newfileName)
 
 #calling functions to convert data into dataframe then excel
-excelConveter(jobTitles, jobPTimes, jobLevel, jobURLList, jobCompany, jobQuali, jobLocation, "Jobs")
+print("Saving to excel...")
+excelConveter(jobTitles, jobPTimes, jobLevel, jobCompany, jobQuali,jobLocation, jobSkill, jobURLList, "Jobs")
 print("Done!")
 #--------------------------------------------------------------------------------------------------------

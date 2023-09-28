@@ -4,13 +4,94 @@ import time
 import pandas as pd
 import openpyxl
 import os.path
+
+#Keywords
+skills_keywords = [
+    "Python",
+    "Java",
+    "C++",
+    "JavaScript",
+    "HTML",
+    "CSS",
+    "SQL",
+    "Git",
+    "Docker",
+    "Kubernetes",
+    "RESTful API",
+    "AWS",
+    "Azure",
+    "Google Cloud",
+    "Linux",
+    "Unix",
+    "Shell Scripting",
+    "Data Structures",
+    "Algorithms",
+    "Object-Oriented Programming",
+    "Functional Programming",
+    "Frontend Development",
+    "Backend Development",
+    "Web Development",
+    "Mobile App Development",
+    "Database Design",
+    "NoSQL",
+    "Microservices",
+    "Agile Development",
+    "Scrum",
+    "Kanban",
+    "Continuous Integration",
+    "Continuous Deployment",
+    "Test-Driven Development",
+    "DevOps",
+    "Software Architecture",
+    "Design Patterns",
+    "Code Review",
+    "Unit Testing",
+    "Debugging",
+    "Performance Optimization",
+    "Security",
+    "User Experience (UX)",
+    "User Interface (UI) Design",
+    "Version Control",
+    "Dependency Management",
+    "Documentation",
+    "Problem Solving",
+    "Collaboration",
+    "Communication",
+    "Teamwork",
+    "Agile Methodologies",
+    "Software Development Lifecycle",
+    "Technical Debt Management",
+    "Code Optimization",
+    "Scalability",
+    "Serverless Computing",
+    "CI/CD Pipelines",
+    "AI and Machine Learning",
+    "Blockchain",
+    "IoT",
+    "Big Data",
+    "Data Science",
+    "Software Testing",
+    "Automation Testing",
+    "Containerization",
+    "Scripting",
+]
+
+qualifications_keywords = [
+    "Vocational",
+    "Bachelor",
+    "Master"
+    "Doctoral",
+    "PhD"
+    "Certification",
+    "Diploma"
+]
+
 # ---------------------------------
 
-#By Yolanda
-#Can edit base on user input but for now using fixed url
+# By Yolanda
 # baseURL = "https://www.jobstreet.com.sg"
 # jobName = "/software-developer-jobs"
-# location = "/in-Singapore?pg=3"
+# location = "/in-Singapore?pg=3" #Can edit base on user input but for now using fixed url
 #
 # jobTitles = []
 # jobPTimes = []
@@ -60,15 +141,17 @@ import os.path
 #             response = requests.get(jobURL)
 #             soup = BeautifulSoup(response.text, "html.parser")
 #
-#             time.sleep(0.5)
+#             time.sleep(0.5) #May not scrap properly if no wait time
 #             try:
+#                 #Get job level
 #                 job_Level = soup.find(string="Career Level").findNext('span').text.strip()
 #                 jobLevel.append(job_Level)
 #
+#                 #Get job qualifications
 #                 job_Qual = soup.find(string="Qualification").findNext('span').text.strip()
 #                 jobQuali.append(job_Qual)
 #
-#                 # Get job title
+#                 # Get job skills
 #                 job_skills = soup.find_all("li")
 #                 mySkills = ""
 #                 for s in job_skills:
@@ -77,10 +160,11 @@ import os.path
 #
 #             except:
 #                 print("")
-#
+
 # #--------------------------------------------------------------------------------------------------------
 
-#By Andrea:
+# By Andrea:
+#Save scrapped data into an excel
 # def excelConveter(jobTitles, jobPTimes, jobLevel, jobCompany, jobQuali, jobLocation, jobSkill,jobURLList,fileName):
 #     # creating excel headers
 #     columns = ['Job Title', 'Post Time', 'Job Level', 'Company Name', 'Qualifications','Location', 'Skills','Job URL']
@@ -91,14 +175,16 @@ import os.path
 #     df.to_excel(newfileName)
 #
 # #calling functions to convert data into dataframe then excel
-# print("Saving to excel...")
 # excelConveter(jobTitles, jobPTimes, jobLevel, jobCompany, jobQuali,jobLocation, jobSkill, jobURLList, "Jobs")
 # print("Done!")
 # #--------------------------------------------------------------------------------------------------------
 
+# By Yolanda:
+#Split the respective job levels and unfiltered skills
 def splitSkillsIntoJobLevel():
     df = pd.read_excel('jobs.xlsx')
     df1 = df[df.duplicated('Job Level', keep=False)].groupby('Job Level')['Skills'].apply(list).reset_index()
+    df2 = df[df.duplicated('Job Level', keep=False)].groupby('Job Level')['Qualifications'].apply(list).reset_index()
 
     with pd.ExcelWriter(
             "./Jobs.xlsx",
@@ -109,8 +195,60 @@ def splitSkillsIntoJobLevel():
         for index, row in df1.iterrows():
             mys = pd.Series(row[1])
             myf = mys.to_frame()
-            df = pd.DataFrame(myf)
-            df.to_excel(writer, sheet_name=str(row[0]))
+            df1 = pd.DataFrame(myf)
+        for index, row in df2.iterrows():
+            mys = pd.Series(row[1])
+            myf = mys.to_frame()
+            df2 = pd.DataFrame(myf)
+            df3 = df1.join(df2,how='right',lsuffix='1', rsuffix='2')
+            df3.to_excel(writer, sheet_name=str(row[0]))
+
+
 
 splitSkillsIntoJobLevel()
 
+# --------------------------------------------------------------------------------------------------------
+
+#By Yolanda:
+#Filter skills required
+def refineSkillsReq(SheetName):
+    xls = pd.ExcelFile('Jobs.xlsx')
+    df1 = pd.read_excel(xls,SheetName)
+    myList = []
+    myotherList = []
+    for index, row in df1.iterrows():
+        tryThis = row[1]
+        tryThis = str(tryThis).split(",")
+        for s in skills_keywords:
+            for t in tryThis:
+                if s in t:
+                    if s not in myList:
+                        myList.append(s)
+        tryThisToo = row[2]
+        tryThisToo = str(tryThisToo).split(",")
+        for s in tryThisToo:
+            for t in qualifications_keywords:
+                s = s.strip()
+                if t in s:
+                    if s not in myotherList:
+                        myotherList.append(s)
+
+    with pd.ExcelWriter(
+            "./Jobs.xlsx",
+            mode="a",
+            engine="openpyxl",
+            if_sheet_exists='replace'
+    ) as writer:
+        df = pd.DataFrame(list(myList))
+        df = pd.concat([df,pd.Series(myotherList)], ignore_index=True, axis=1)
+        df.to_excel(writer, sheet_name=SheetName)
+
+# --------------------------------------------------------------------------------------------------------
+
+#Update all excels with their respective skill requirements
+tabs = pd.ExcelFile('Jobs.xlsx').sheet_names
+
+for i in range(1, len(tabs), 1):
+    refineSkillsReq(tabs[i])
+
+#--------------------------------------------------------------------------------------------------------

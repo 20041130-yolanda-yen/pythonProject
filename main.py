@@ -4,6 +4,8 @@ import time
 import pandas as pd
 import openpyxl
 import os.path
+import matplotlib.pyplot as plt
+import numpy as np
 
 #Keywords
 skills_keywords = [
@@ -86,9 +88,12 @@ qualifications_keywords = [
     "Diploma"
 ]
 
-# ---------------------------------
+
+
+# #--------------------------------------------------------------------------------------------------------
 
 # By Yolanda
+#Web scrap starts here
 # baseURL = "https://www.jobstreet.com.sg"
 # jobName = "/software-developer-jobs"
 # location = "/in-Singapore?pg=3" #Can edit base on user input but for now using fixed url
@@ -161,6 +166,8 @@ qualifications_keywords = [
 #             except:
 #                 print("")
 
+#Web scrap ends here
+
 # #--------------------------------------------------------------------------------------------------------
 
 # By Andrea:
@@ -177,6 +184,7 @@ qualifications_keywords = [
 # #calling functions to convert data into dataframe then excel
 # excelConveter(jobTitles, jobPTimes, jobLevel, jobCompany, jobQuali,jobLocation, jobSkill, jobURLList, "Jobs")
 # print("Done!")
+
 # #--------------------------------------------------------------------------------------------------------
 
 # By Yolanda:
@@ -203,10 +211,6 @@ def splitSkillsIntoJobLevel():
             df3 = df1.join(df2,how='right',lsuffix='1', rsuffix='2')
             df3.to_excel(writer, sheet_name=str(row[0]))
 
-
-
-splitSkillsIntoJobLevel()
-
 # --------------------------------------------------------------------------------------------------------
 
 #By Yolanda:
@@ -215,23 +219,25 @@ def refineSkillsReq(SheetName):
     xls = pd.ExcelFile('Jobs.xlsx')
     df1 = pd.read_excel(xls,SheetName)
     myList = []
-    myotherList = []
+    # myotherList = []
     for index, row in df1.iterrows():
         tryThis = row[1]
         tryThis = str(tryThis).split(",")
         for s in skills_keywords:
             for t in tryThis:
                 if s in t:
-                    if s not in myList:
-                        myList.append(s)
-        tryThisToo = row[2]
-        tryThisToo = str(tryThisToo).split(",")
-        for s in tryThisToo:
-            for t in qualifications_keywords:
-                s = s.strip()
-                if t in s:
-                    if s not in myotherList:
-                        myotherList.append(s)
+                    myList.append(s)
+
+        # tryThisToo = row[2]
+        # tryThisToo = str(tryThisToo).split(",")
+        # for s in tryThisToo:
+        #     for t in qualifications_keywords:
+        #         s = s.strip()
+        #         if t in s:
+        #             if s not in myotherList:
+        #                 myotherList.append(s)
+
+
 
     with pd.ExcelWriter(
             "./Jobs.xlsx",
@@ -239,11 +245,52 @@ def refineSkillsReq(SheetName):
             engine="openpyxl",
             if_sheet_exists='replace'
     ) as writer:
-        df = pd.DataFrame(list(myList))
-        df = pd.concat([df,pd.Series(myotherList)], ignore_index=True, axis=1)
+        col = ['Skills']
+        df = pd.DataFrame(list(myList),columns=col)
         df.to_excel(writer, sheet_name=SheetName)
 
 # --------------------------------------------------------------------------------------------------------
+
+# By Yolanda:
+# Filter skills required
+def getPopularSkills():
+    SkillsReq = []
+    xls = pd.ExcelFile('Jobs.xlsx')
+    df1 = pd.read_excel(xls, 'Sheet1')
+
+    for index, row in df1.iterrows():
+        tryThis = row[7]
+        tryThis = str(tryThis).split(",")
+        for s in skills_keywords:
+            for t in tryThis:
+                if s in t:
+                    SkillsReq.append(s)
+
+    df = pd.DataFrame(SkillsReq)
+    df_new = df.rename(columns={0: 'Skills'})
+    plotGraphAll(df_new)
+
+# --------------------------------------------------------------------------------------------------------
+
+#By Yolanda
+#Produce graph of popular skills
+def plotGraph(SheetName):
+    xls = pd.ExcelFile('Jobs.xlsx')
+    df1 = pd.read_excel(xls, SheetName)
+    df1.Skills.value_counts().plot(kind='barh')
+    plt.title('Popular Skills for %s Software Engineering jobs'%SheetName)
+    plt.show()
+
+#--------------------------------------------------------------------------------------------------------
+
+#By Yolanda
+#Produce graph of popular skills
+def plotGraphAll(df):
+    df.Skills.value_counts().plot(kind='barh')
+    plt.title('Popular Skills for a software engineer')
+    plt.show()
+
+#--------------------------------------------------------------------------------------------------------
 
 #Update all excels with their respective skill requirements
 tabs = pd.ExcelFile('Jobs.xlsx').sheet_names
@@ -252,3 +299,7 @@ for i in range(1, len(tabs), 1):
     refineSkillsReq(tabs[i])
 
 #--------------------------------------------------------------------------------------------------------
+
+
+splitSkillsIntoJobLevel()
+getPopularSkills()

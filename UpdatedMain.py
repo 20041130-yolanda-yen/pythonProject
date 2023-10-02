@@ -235,6 +235,13 @@ def excelConveter(jobTitles, jobPTimes, jobLevel, jobCompany, jobQuali, jobLocat
     # Convert dataframe into excel
     newfileName = fileName + ".xlsx"
     df.to_excel(newfileName,index=False)
+#--------------------------------------------------------------------------------------------------------
+
+def plotGraphAll(df):
+    df.Skills.value_counts().plot(kind='barh')
+    plt.title('Popular Skills ')
+    plt.show()
+#--------------------------------------------------------------------------------------------------------
 
 #By Yolanda
 #Clean string to get skills for each position in each excel (job position)
@@ -242,6 +249,7 @@ def refineSkillsReq(excelName):
     excelName = excelName + '.xlsx'
     df1 = pd.read_excel(excelName)
     my2ndList = []
+    mySkills = []
     for index, row in df1.iterrows():
         myList = []
         jobSkill = row[6]
@@ -251,31 +259,46 @@ def refineSkillsReq(excelName):
                 for s in SEskills_keywords:
                     for j in jobSkill:
                         if s in j:
+                            mySkills.append(s)
                             if s not in myList:
                                 myList.append(s)
+            if excelName == 'IEJobs.xlsx':
+                for s in IEskills_keywords:
+                    for j in jobSkill:
+                        if s in j:
+                            mySkills.append(s)
+                            if s not in myList:
+                                myList.append(s)
+
             my2ndList.append(myList)
         else:
             my2ndList.append("")
+
     df1['Skills'] = my2ndList
     df1['Skills'] = df1['Skills'].astype(str).str.replace(r'[][]', '', regex=True)
     df1.to_excel(excelName,index=False)
+    df = pd.DataFrame(mySkills)
+    df_new = df.rename(columns={0: 'Skills'})
+    plotGraphAll(df_new)
+
+
 
 # -------------------------------------FUNCTIONS END HERE-------------------------------------
 
 # ---------------------------------CALL OF FUNCTIONS STARTS HERE---------------------------------
-# jobName = "/software-developer-jobs"
-# scrapData(jobName)
-# excelConveter(jobTitles, jobPTimes, jobLevel, jobCompany, jobQuali,jobLocation, jobSkill, jobURLList, "SEJobs")
-# print("Done!")
-#
-#
-# jobName = "/information-security-jobs"
-# scrapData(jobName)
-# excelConveter(jobTitles, jobPTimes, jobLevel, jobCompany, jobQuali,jobLocation, jobSkill, jobURLList, "IEJobs")
-# print("Done!")
-#
-# refineSkillsReq('SEJobs')
-# refineSkillsReq('IEJobs')
+jobName = "/software-developer-jobs"
+scrapData(jobName)
+excelConveter(jobTitles, jobPTimes, jobLevel, jobCompany, jobQuali,jobLocation, jobSkill, jobURLList, "SEJobs")
+print("Done!")
+
+
+jobName = "/information-security-jobs"
+scrapData(jobName)
+excelConveter(jobTitles, jobPTimes, jobLevel, jobCompany, jobQuali,jobLocation, jobSkill, jobURLList, "IEJobs")
+print("Done!")
+
+refineSkillsReq('SEJobs')
+refineSkillsReq('IEJobs')
 # ---------------------------------CALL OF FUNCTIONS ENDS HERE---------------------------------
 
 

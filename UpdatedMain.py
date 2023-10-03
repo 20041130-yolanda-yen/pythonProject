@@ -10,6 +10,7 @@ SEskills_keywords = [
     "Python",
     "Java",
     "C++",
+    "C#",
     "JavaScript",
     "HTML",
     "CSS",
@@ -17,7 +18,8 @@ SEskills_keywords = [
     "Git",
     "Docker",
     "Kubernetes",
-    "RESTful API",
+    "RESTful",
+    "APIs",
     "AWS",
     "Azure",
     "Google Cloud",
@@ -57,8 +59,8 @@ SEskills_keywords = [
     "Code Optimization",
     "Scalability",
     "Serverless Computing",
-    "CI/CD Pipelines",
-    "AI and Machine Learning",
+    "CI/CD",
+    "AI",
     "Blockchain",
     "IoT",
     "Big Data",
@@ -67,6 +69,32 @@ SEskills_keywords = [
     "Automation Testing",
     "Containerization",
     "Scripting",
+    "Microsoft Visual Studio",
+    "Microsoft .NET framework",
+    "UML",
+    "ASIC flow layout design",
+    "design to tape-out",
+    "EDA tools",
+    "NLP",
+    "BERT",
+    "GPT",
+    "spaCy",
+    "DOTNET",
+    "SDLC",
+    "GEM",
+    "SECS",
+    "system design",
+    "Knowledge of programming",
+    "OOP",
+    ".NET",
+    "cloud technologies",
+    "servo",
+    "motion control systems",
+    "Unreal Engine",
+    "Unity",
+    "embedded software development",
+    "quality control",
+    "node.js"
 ]
 
 IEskills_keywords = [
@@ -241,7 +269,7 @@ def excelConveter(jobTitles, jobPTimes, jobLevel, jobCompany, jobQuali, jobLocat
 #By Yolanda
 def plotGraphAll(df):
     df.Skills.value_counts().plot(kind='barh')
-    plt.title('Popular Skills ')
+    plt.title('Popular Skills')
     n = random.randint(0,100)
     plt.savefig(str(n)+'.jpg', dpi = 600) #Save the plotted image
     plt.show()

@@ -3,6 +3,7 @@ from bs4 import BeautifulSoup
 import time
 import pandas as pd
 import matplotlib.pyplot as plt
+import random
 
 #Keywords
 SEskills_keywords = [
@@ -237,9 +238,12 @@ def excelConveter(jobTitles, jobPTimes, jobLevel, jobCompany, jobQuali, jobLocat
     df.to_excel(newfileName,index=False)
 #--------------------------------------------------------------------------------------------------------
 
+#By Yolanda
 def plotGraphAll(df):
     df.Skills.value_counts().plot(kind='barh')
     plt.title('Popular Skills ')
+    n = random.randint(0,100)
+    plt.savefig(str(n)+'.jpg', dpi = 600) #Save the plotted image
     plt.show()
 #--------------------------------------------------------------------------------------------------------
 
@@ -274,28 +278,26 @@ def refineSkillsReq(excelName):
         else:
             my2ndList.append("")
 
-    df1['Skills'] = my2ndList
-    df1['Skills'] = df1['Skills'].astype(str).str.replace(r'[][]', '', regex=True)
-    df1.to_excel(excelName,index=False)
-    df = pd.DataFrame(mySkills)
-    df_new = df.rename(columns={0: 'Skills'})
-    plotGraphAll(df_new)
-
-
+    df1['Skills'] = my2ndList #Updating exisiting column Skills with new data (new data = each job row got how many skills etc)
+    df1['Skills'] = df1['Skills'].astype(str).str.replace(r'[][]', '', regex=True) #Remove list [ ]s
+    df1.to_excel(excelName,index=False) #Save the update df1 into exisiting excel
+    df = pd.DataFrame(mySkills) #Turn mySkills list to dataframe (this list contains ALL skills, doesnt care from which job)
+    df_new = df.rename(columns={0: 'Skills'}) #name the column in this dataframe so can easily call it later
+    plotGraphAll(df_new) #plot the graph
 
 # -------------------------------------FUNCTIONS END HERE-------------------------------------
 
 # ---------------------------------CALL OF FUNCTIONS STARTS HERE---------------------------------
-jobName = "/software-developer-jobs"
-scrapData(jobName)
-excelConveter(jobTitles, jobPTimes, jobLevel, jobCompany, jobQuali,jobLocation, jobSkill, jobURLList, "SEJobs")
-print("Done!")
-
-
-jobName = "/information-security-jobs"
-scrapData(jobName)
-excelConveter(jobTitles, jobPTimes, jobLevel, jobCompany, jobQuali,jobLocation, jobSkill, jobURLList, "IEJobs")
-print("Done!")
+# jobName = "/software-developer-jobs"
+# scrapData(jobName)
+# excelConveter(jobTitles, jobPTimes, jobLevel, jobCompany, jobQuali,jobLocation, jobSkill, jobURLList, "SEJobs")
+# print("Done!")
+#
+#
+# jobName = "/information-security-jobs"
+# scrapData(jobName)
+# excelConveter(jobTitles, jobPTimes, jobLevel, jobCompany, jobQuali,jobLocation, jobSkill, jobURLList, "IEJobs")
+# print("Done!")
 
 refineSkillsReq('SEJobs')
 refineSkillsReq('IEJobs')
